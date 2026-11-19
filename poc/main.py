@@ -85,8 +85,6 @@ def transcribe_files(paths, model_name, device, compute_type, batch_size, langua
             if s["text"].strip()
         ]
         results.append((segs, res.get("language")))
-
-    # Release VRAM before S2-Pro (which wants ~24 GB) gets going.
     del model
     free_gpu()
     return results
@@ -137,7 +135,7 @@ def chunk_text(units: list[str], max_chars: int) -> list[str]:
 
 
 # --------------------------------------------------------------------------- #
-# Audio helpers (ffmpeg is already a WhisperX requirement)
+# Audio helpers
 # --------------------------------------------------------------------------- #
 
 def ffmpeg(*args: str) -> None:
