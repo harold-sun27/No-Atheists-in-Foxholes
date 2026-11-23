@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Transcribe an MP3, MP4, or WAV file locally with faster-whisper."""
+"""Transcribe media files locally with faster-whisper."""
 
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ import argparse
 import sys
 from pathlib import Path
 
-SUPPORTED_EXTENSIONS = {".mp3", ".mp4", ".wav"}
 DEFAULT_MODEL = "large-v3"
 DEFAULT_DEVICE = "cuda"
 DEFAULT_CUDA_COMPUTE_TYPE = "int8_float16"
@@ -24,10 +23,12 @@ def format_timestamp(seconds: float) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Convert an MP3, MP4, or WAV recording into a timestamped text transcript."
+        description="Convert an audio or video recording into a timestamped text transcript."
     )
     parser.add_argument(
-        "input_file", type=Path, help="Path to an .mp3, .mp4, or .wav file"
+        "input_file",
+        type=Path,
+        help="Path to a media file supported by PyAV/FFmpeg",
     )
     parser.add_argument(
         "-o",
@@ -66,9 +67,6 @@ def validate_input(path: Path) -> Path:
     path = path.expanduser().resolve()
     if not path.is_file():
         raise ValueError(f"Input file not found: {path}")
-    if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-        supported = ", ".join(sorted(SUPPORTED_EXTENSIONS))
-        raise ValueError(f"Unsupported file type '{path.suffix}'. Use: {supported}")
     return path
 
 

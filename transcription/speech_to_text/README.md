@@ -1,8 +1,9 @@
 # Speech-to-Text
 
 This module turns recorded audio or video into a timestamped transcript using
-[faster-whisper](https://github.com/SYSTRAN/faster-whisper). It accepts MP3,
-MP4, and WAV files and performs transcription locally.
+[faster-whisper](https://github.com/SYSTRAN/faster-whisper). Common inputs
+include MP3, WAV, M4A, and MP4. Other media formats supported by PyAV/FFmpeg
+can be used as well. Transcription is performed locally.
 
 ## Project scope
 
@@ -35,10 +36,11 @@ not required.
 .\transcribe.bat "C:\path\to\recording.wav"
 ```
 
-MP3 and MP4 inputs work the same way:
+Other inputs work the same way:
 
 ```powershell
 .\transcribe.bat "C:\path\to\recording.mp3"
+.\transcribe.bat "C:\path\to\recording.m4a"
 .\transcribe.bat "C:\path\to\video.mp4"
 ```
 
