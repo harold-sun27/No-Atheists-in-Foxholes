@@ -1,0 +1,42 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environment variables
+.env
+.env.*
+!.env.example
+
+# Downloaded models and caches
+.cache/
+models/
+model_cache/
+
+# Input media and generated transcripts
+*.mp3
+*.mp4
+*_transcription.txt
+transcription.txt
+output.txt
+input/
+output/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
