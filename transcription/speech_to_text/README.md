@@ -1,60 +1,80 @@
-# Local Speech-to-Text
+# Speech-to-Text
 
-This folder contains the first stage of the Archivist transcription pipeline. It converts an MP3 or MP4 file into a local text transcript using [faster-whisper](https://github.com/SYSTRAN/faster-whisper).
+This module turns recorded audio or video into a timestamped transcript using
+[faster-whisper](https://github.com/SYSTRAN/faster-whisper). It accepts MP3,
+MP4, and WAV files and performs transcription locally.
 
-## Model
+## Project scope
 
-The default model is `turbo` (`large-v3-turbo`), an optimized Whisper model with about 809 million parameters. It is comfortably below the 8-billion-parameter limit and provides a strong speed/accuracy balance. You can select another compatible model with `--model`; for example, `large-v3` is approximately 1.55 billion parameters and prioritizes accuracy over speed.
+The Archivist is an interactive history project built around recorded and
+written source material. Transcription is the first step in preparing that
+material for later stages such as topic organization, knowledge retrieval,
+interactive dialogue, and voice output.
 
-The model is downloaded on the first run and cached locally. Transcription then runs locally. MP3 and MP4 decoding is handled by PyAV, which bundles the required FFmpeg libraries.
+This directory covers transcription only. Topic extraction, language-model
+integration, and speech generation belong in separate modules.
 
 ## Setup
 
-Python 3.10-3.12 is recommended.
+Python 3.11 is recommended. From the repository root:
 
 ```powershell
-cd C:/Users/sarth/No-Atheists-in-Foxholes/transcription/speech_to_text
+cd transcription\speech_to_text
 py -3.11 -m venv .venv
-.venv/Scripts/Activate.ps1
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-## Transcribe a file
+The environment only needs to be created once. After setup, `transcribe.bat`
+selects the correct Python interpreter automatically, so manual activation is
+not required.
+
+## Usage
 
 ```powershell
-python transcribe.py "C:/path/to/recording.mp3"
-python transcribe.py "C:/path/to/video.mp4"
+.\transcribe.bat "C:\path\to\recording.wav"
 ```
 
-By default, the script creates `<input-name>_transcription.txt` beside the input file. Each line contains the segment's start time, end time, and transcription.
+MP3 and MP4 inputs work the same way:
 
-Example:
+```powershell
+.\transcribe.bat "C:\path\to\recording.mp3"
+.\transcribe.bat "C:\path\to\video.mp4"
+```
+
+The default model is `large-v3`. It runs on CUDA with `int8_float16` compute by
+default. The model is downloaded and cached on its first use; subsequent
+transcriptions use the local cached copy.
+
+The output is saved beside the input as `<input-name>_transcription.txt`.
+Segments include their start and end times:
 
 ```text
 [00:00:00.000 --> 00:00:04.250] This is the first transcribed segment.
 ```
 
-Use a custom output location:
+## Options
+
+Choose an output file:
 
 ```powershell
-python transcribe.py recording.mp3 --output output/transcription.txt
+.\transcribe.bat recording.wav --output output\transcription.txt
 ```
 
 Write plain text without timestamps:
 
 ```powershell
-python transcribe.py recording.mp3 --plain
+.\transcribe.bat recording.wav --plain
 ```
 
-Force CPU or CUDA explicitly:
+Run on the CPU when CUDA is unavailable:
 
 ```powershell
-python transcribe.py recording.mp3 --device cpu
-python transcribe.py recording.mp3 --device cuda
+.\transcribe.bat recording.wav --device cpu
 ```
 
-Show every option:
+Show all available options:
 
 ```powershell
-python transcribe.py --help
+.\transcribe.bat --help
 ```

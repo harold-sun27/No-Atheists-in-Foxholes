@@ -26,6 +26,7 @@ model_cache/
 # Input media and generated transcripts
 *.mp3
 *.mp4
+*.wav
 *_transcription.txt
 transcription.txt
 output.txt

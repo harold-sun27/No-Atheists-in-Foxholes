@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Transcribe an MP3 or MP4 file locally with faster-whisper."""
+"""Transcribe an MP3, MP4, or WAV file locally with faster-whisper."""
 
 from __future__ import annotations
 
@@ -7,8 +7,10 @@ import argparse
 import sys
 from pathlib import Path
 
-SUPPORTED_EXTENSIONS = {".mp3", ".mp4"}
-DEFAULT_MODEL = "turbo"
+SUPPORTED_EXTENSIONS = {".mp3", ".mp4", ".wav"}
+DEFAULT_MODEL = "large-v3"
+DEFAULT_DEVICE = "cuda"
+DEFAULT_CUDA_COMPUTE_TYPE = "int8_float16"
 
 
 def format_timestamp(seconds: float) -> str:
@@ -22,9 +24,11 @@ def format_timestamp(seconds: float) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Convert an MP3 or MP4 recording into a timestamped text transcript."
+        description="Convert an MP3, MP4, or WAV recording into a timestamped text transcript."
     )
-    parser.add_argument("input_file", type=Path, help="Path to an .mp3 or .mp4 file")
+    parser.add_argument(
+        "input_file", type=Path, help="Path to an .mp3, .mp4, or .wav file"
+    )
     parser.add_argument(
         "-o",
         "--output",
@@ -32,19 +36,14 @@ def parse_args() -> argparse.Namespace:
         help="Output text file (default: <input>_transcription.txt)",
     )
     parser.add_argument(
-        "--model",
-        default=DEFAULT_MODEL,
-        help="faster-whisper model name or local model path (default: turbo)",
-    )
-    parser.add_argument(
         "--device",
         choices=("auto", "cpu", "cuda"),
-        default="auto",
-        help="Inference device (default: auto)",
+        default=DEFAULT_DEVICE,
+        help="Inference device (default: cuda)",
     )
     parser.add_argument(
         "--compute-type",
-        help="CTranslate2 compute type (default: float16 on CUDA, int8 on CPU)",
+        help="CTranslate2 compute type (default: int8_float16 on CUDA, int8 on CPU)",
     )
     parser.add_argument(
         "--language",
@@ -87,7 +86,7 @@ def choose_runtime(
         device = requested_device
 
     compute_type = requested_compute_type or (
-        "float16" if device == "cuda" else "int8"
+        DEFAULT_CUDA_COMPUTE_TYPE if device == "cuda" else "int8"
     )
     return device, compute_type
 
@@ -132,7 +131,7 @@ def transcribe(args: argparse.Namespace) -> Path:
         raise ValueError("The output file must use the .txt extension")
 
     device, compute_type = choose_runtime(args.device, args.compute_type)
-    model, device, compute_type = load_model(args.model, device, compute_type)
+    model, device, compute_type = load_model(DEFAULT_MODEL, device, compute_type)
 
     print(f"Transcribing: {input_path.name}")
     segments, info = model.transcribe(
@@ -177,3 +176,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+ 
