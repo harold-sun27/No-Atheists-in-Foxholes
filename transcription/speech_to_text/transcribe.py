@@ -157,7 +157,10 @@ def transcribe(args: argparse.Namespace) -> Path:
     language = info.language or "unknown"
     probability = getattr(info, "language_probability", None)
     confidence = f" ({probability:.1%})" if probability is not None else ""
+    duration = getattr(info, "duration", None)
     print(f"Language: {language}{confidence}")
+    if duration is not None:
+        print(f"Duration: {duration:.3f}")
     print(f"Runtime: {device} ({compute_type})")
     print(f"Saved transcript: {output_path}")
     return output_path
